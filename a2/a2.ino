@@ -45,20 +45,38 @@ float readUltrasonic() {
 }
 
 bool isWhiteBoxClose() {
-  const int samples = 3;
-  int hits = 0;
-  Serial.println("in iswhiteBoxClose. Checking white hits...");
-  for (int i = 0; i < samples; i++) {
-    int l = digitalRead(leftIR);
-    int r = digitalRead(rightIR);
+  
+  Serial.println("Checking Box colour....");
+  int LEFT_IR = digitalRead(leftIR);
+  int RIGHT_IR = digitalRead(rightIR);
 
-    // If either sensor triggers (reflective), count as hit
-    if (l == IR_DETECT_VALUE || r == IR_DETECT_VALUE) hits++;
-    delay(100);
+  // Case 1: both sensors detect white object --> object is centered RETURN TRUE to PUSH
+  if (LEFT_IR == IR_DETECT_VALUE && RIGHT_IR == IR_DETECT_VALUE){
+    Serial.println("Detected white object from BOTH sensors");
+    return true;
   }
-  Serial.print("Hit count: ");
-  Serial.println(hits);
-  return hits >= 2; //taking noise into account. majority of 5 would be highly likely the object is white
+  //Case 2: left sensor detects --> object slightly left
+  else if (LEFT_IR == IR_DETECT_VALUE && RIGHT_IR != IR_DETECT_VALUE){
+    Serial.println("Detected white object from LEFT sensor. STEER LEFT");
+    moveLeft(110);
+    delay(80);
+    return false;
+  }
+  //Case 3: right sensor detects --> object slightly right
+  else if (LEFT_IR != IR_DETECT_VALUE && RIGHT_IR == IR_DETECT_VALUE){
+    Serial.println("Detected white object from RIGHT sensor. STEER RIGHT");
+    moveRight(110);
+    delay(80);
+    moveForward(0); //stop the motors
+    return false;
+  }
+  //Case 4: Nothing detected --> object is likely to be black
+  else {
+    Serial.println("Detected object is NOT WHITE");
+    return false;
+  }
+
+
 }
 
 void setup() {
@@ -130,7 +148,6 @@ void loop() {
       if (left == IR_DETECT_VALUE && right != IR_DETECT_VALUE) {
         // object more on left front -> turn slightly left while moving
         Serial.println("Approach: steer left");
-        backLeft(0);   // stop backward component (no effect)
         moveLeft(120);
         delay(80);
         moveForward(SPEED_APPROACH);
@@ -149,24 +166,29 @@ void loop() {
     // Move to consistent final distance for reliable reflectivity check
     case VERIFY:
       distance = readUltrasonic();
+
       if (distance > FINAL_VERIFY_CM) {
         Serial.println("In state VERIFY; moving Forward");
-        moveForward(110);
+        moveForward(80);
         delay(60);
-      } else {
-        // stop motors briefly before reading
         moveForward(0);
-        delay(50);
-
+      } else {
+        // stop motors briefly before reading values from sensorss
+        moveForward(0);
+        delay(150);
 
         bool white = isWhiteBoxClose();
 
         if (white) {
           Serial.println("VERIFY: WHITE box -> PUSH");
           state = PUSH;
-        } else {
+        }
+        else if (left != IR_DETECT_VALUE && right != IR_DETECT_VALUE) {
           Serial.println("VERIFY: BLACK box -> REJECT");
           state = REJECT;
+        }
+        else {
+          Serial.println("VERIFY: Adjusting alignment");
         }
       }
       break;
