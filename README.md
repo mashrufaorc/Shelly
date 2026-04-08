@@ -1,11 +1,21 @@
 # Shelly
 
-The assignment is split into 3 major parts:
+Assignment 1:
+Mobile Robot Motion
+Task Description:
+Robot to drive along predefined paths in open-loop.
 
-Detect the boxes from a greater distance
-Detect the box colours
-Detect the boundary
+Assignment 2:
+Obstacle Avoidance
+Task Description:
+Robot to drive continuously while avoiding obstacles.
 
-I think the easiest code to get started with right now would be trying to get the robot to stay within its line boundary.
-The code I have uploaded right now is from the SunFounder website, which tells the robot to follow the line.
-We want ours to move away from it.
+Assignment 3:
+Closed-Loop Control
+Task Description:
+Robot to follow a wall at a given distance and detects corners to turn accordingly.
+
+Assignment 4:
+Pick-Up and Delivery
+Task Description:
+Robot to follow a wall while tracking its covered distance. At certain distances robot will seek out and follow lines orthogonal to the wall to pick- up and deliver objects between locations.
