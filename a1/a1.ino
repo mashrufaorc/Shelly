@@ -30,7 +30,7 @@ void turnRight(int speed) {
   digitalWrite(B_pin1, LOW);
   analogWrite(B_pin2, speed);
 
-  // // for turning left
+  // for turning left
   // analogWrite(B_pin1, speed);
   // digitalWrite(B_pin2, LOW);s
 }
