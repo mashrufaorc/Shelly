@@ -75,8 +75,6 @@ bool isWhiteBoxClose() {
     Serial.println("Detected object is NOT WHITE");
     return false;
   }
-
-
 }
 
 void setup() {
